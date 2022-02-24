@@ -6,8 +6,6 @@ import {Search} from "@mui/icons-material";
 import LoadingButton from '@mui/lab/LoadingButton';
 import {searchMovie} from "./api";
 
-import WorkerBuilder from './workers/worker-builder';
-import Worker from './workers/group-movies-worker';
 import MovieCard from "./components/MovieCard";
 
 export interface MovieDetail {
@@ -33,6 +31,8 @@ const SearchTypes = [
     }
 ];
 
+const sortMoviesWorker = new window.Worker("./group-movies-worker.js");
+
 function App() {
 
     const [title, setTitle] = useState("");
@@ -43,10 +43,9 @@ function App() {
     const [moviesList, setMoviesList] = useState<{ [key: string]: MovieDetail[] }>({});
 
     /**
-     * Initialize worker and start listening for messages
+     * Start listening for worker messages
      */
-    const sortMoviesWorker = new WorkerBuilder(Worker);
-    sortMoviesWorker.onmessage = (message) => {
+    sortMoviesWorker.onmessage = (message:any) => {
         if (message) {
             setMoviesList(message.data);
         }
@@ -134,7 +133,7 @@ function App() {
                         </Typography>
                         {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
                         {Object.keys(moviesList).map(key => {
-                                return (<>
+                                return (<React.Fragment key={key}>
                                     <Divider textAlign="left">
                                         <Typography color={"primary"} sx={{marginBottom: '10px'}} variant="h5"
                                                     align={"left"}>{key}</Typography>
@@ -145,10 +144,10 @@ function App() {
                                         spacing={2}
                                     >
                                         {
-                                            moviesList[key].map(movie => <MovieCard {...movie} />)
+                                            moviesList[key].map(movie => <MovieCard key={'movie-card-'+movie.imdbID} {...movie} />)
                                         }
                                     </Stack>
-                                </>)
+                                </React.Fragment>)
                             }
                         )
                         }
