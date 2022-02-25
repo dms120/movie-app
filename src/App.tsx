@@ -139,9 +139,9 @@ function App() {
                                                     align={"left"}>{key}</Typography>
                                     </Divider>
                                     <Stack
-                                        direction="row"
+                                        direction={{ xs: 'column', sm: 'row' }}
+                                        spacing={{ xs: 1, sm: 2, md: 2 }}
                                         divider={<Divider orientation="vertical" flexItem/>}
-                                        spacing={2}
                                     >
                                         {
                                             moviesList[key].map(movie => <MovieCard key={'movie-card-'+movie.imdbID} {...movie} />)
